@@ -20,6 +20,8 @@ echo "Cosmovisor is installed at: $COSMOVISOR_PATH"
 OS=$(awk -F '=' '/^NAME/{print $2}' /etc/os-release | awk '{print $1}' | tr -d '"')
 VERSION=$(awk -F '=' '/^VERSION_ID/{print $2}' /etc/os-release | awk '{print $1}' | tr -d '"')
 
+
+
 # Define the binary and installation paths
 BINARY="tradeviewd"
 INSTALL_PATH="/usr/local/bin/"                   #AWS
@@ -36,7 +38,22 @@ if [ "$OS" == "Ubuntu" ] && [ "$VERSION" == "22.04" -o "$VERSION" == "24.04" ]; 
   
   # Check if the installation path exists
   if [ -d "$INSTALL_PATH" ]; then
-  sudo  cp "$current_path/ubuntu${VERSION}build/$BINARY" "$INSTALL_PATH" && sudo chmod +x "${INSTALL_PATH}${BINARY}"
+
+# --- Binary Download Logic ---
+# Detect Ubuntu version for choosing the matching prebuilt binary
+# UBUNTU_VERSION=$(lsb_release -rs)
+# Set binary download URL (update this if your release URL pattern is different)
+BINARY_URL="https://github.com/tradeview-local/tradeview-devnet-node-script/releases/download/ubuntu${VERSION}/${BINARY}"
+echo $BINARY_URL
+
+# Download and install the node binary into the chosen install path
+echo "Downloading binary for Ubuntu $UBUNTU_VERSION: $BINARY_URL"
+curl -L "$BINARY_URL" -o "/tmp/${BINARY}"
+chmod +x "/tmp/${BINARY}"
+sudo cp "/tmp/${BINARY}" "$INSTALL_PATH"
+echo "Binary moved to ${INSTALL_PATH}${BINARY}"
+sudo chmod +x "${INSTALL_PATH}${BINARY}"
+  # sudo  cp "$current_path/ubuntu${VERSION}build/$BINARY" "$INSTALL_PATH" && sudo chmod +x "${INSTALL_PATH}${BINARY}"
     echo "$BINARY installed or updated successfully!"
   else
     echo "Installation path $INSTALL_PATH does not exist. Please create it."
@@ -111,10 +128,10 @@ sudo systemctl stop tradeviewchain.service
 fi
 	sudo rm -rf "$HOMEDIR"
 
-
 	# Set client config
-	tradeviewd config keyring-backend $KEYRING --home "$HOMEDIR"
-	tradeviewd config chain-id $CHAINID --home "$HOMEDIR"
+  tradeviewd config set client chain-id "$CHAINID" --home "$HOMEDIR"
+	tradeviewd config set client keyring-backend "$KEYRING" --home "$HOMEDIR"
+	
     echo "===========================Copy these keys with mnemonics and save it in safe place ==================================="
 	tradeviewd keys add $KEYS --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
 	echo "========================================================================================================================"
@@ -233,28 +250,28 @@ fi
 fi
 
 #========================================================================================================================================================
-sudo su -c  "echo '[Unit]
-Description=tradeview Node
-Wants=network-online.target
-After=network-online.target
-[Service]
-User=$(whoami)
-Group=$(whoami)
-Type=simple
-ExecStart=$COSMOVISOR_PATH run start --home $DAEMON_HOME --chain-id "$CHAINID" 
-Restart=always
-RestartSec=3
-LimitNOFILE=4096
-Environment="DAEMON_NAME=tradeviewd"
-Environment="DAEMON_HOME="$HOMEDIR""
-Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
-Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
-Environment="DAEMON_LOG_BUFFER_SIZE=512"
-Environment="UNSAFE_SKIP_BACKUP=false"
-[Install]
-WantedBy=multi-user.target'> /etc/systemd/system/tradeviewchain.service"
+# sudo su -c  "echo '[Unit]
+# Description=tradeview Node
+# Wants=network-online.target
+# After=network-online.target
+# [Service]
+# User=$(whoami)
+# Group=$(whoami)
+# Type=simple
+# ExecStart=$COSMOVISOR_PATH run start --home $DAEMON_HOME --chain-id "$CHAINID" 
+# Restart=always
+# RestartSec=3
+# LimitNOFILE=4096
+# Environment="DAEMON_NAME=tradeviewd"
+# Environment="DAEMON_HOME="$HOMEDIR""
+# Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+# Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+# Environment="DAEMON_LOG_BUFFER_SIZE=512"
+# Environment="UNSAFE_SKIP_BACKUP=false"
+# [Install]
+# WantedBy=multi-user.target'> /etc/systemd/system/tradeviewchain.service"
 
-sudo systemctl daemon-reload
-sudo systemctl enable tradeviewchain.service
-# tradeviewd tendermint unsafe-reset-all --home $HOMEDIR
-sudo systemctl start tradeviewchain.service
+# sudo systemctl daemon-reload
+# sudo systemctl enable tradeviewchain.service
+# # tradeviewd tendermint unsafe-reset-all --home $HOMEDIR
+# sudo systemctl start tradeviewchain.service
