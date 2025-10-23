@@ -250,28 +250,28 @@ fi
 fi
 
 #========================================================================================================================================================
-# sudo su -c  "echo '[Unit]
-# Description=tradeview Node
-# Wants=network-online.target
-# After=network-online.target
-# [Service]
-# User=$(whoami)
-# Group=$(whoami)
-# Type=simple
-# ExecStart=$COSMOVISOR_PATH run start --home $DAEMON_HOME --chain-id "$CHAINID" 
-# Restart=always
-# RestartSec=3
-# LimitNOFILE=4096
-# Environment="DAEMON_NAME=tradeviewd"
-# Environment="DAEMON_HOME="$HOMEDIR""
-# Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
-# Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
-# Environment="DAEMON_LOG_BUFFER_SIZE=512"
-# Environment="UNSAFE_SKIP_BACKUP=false"
-# [Install]
-# WantedBy=multi-user.target'> /etc/systemd/system/tradeviewchain.service"
+sudo su -c  "echo '[Unit]
+Description=tradeview Node
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=$(whoami)
+Group=$(whoami)
+Type=simple
+ExecStart=$COSMOVISOR_PATH run start --home $DAEMON_HOME --chain-id "$CHAINID" 
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+Environment="DAEMON_NAME=tradeviewd"
+Environment="DAEMON_HOME="$HOMEDIR""
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_LOG_BUFFER_SIZE=512"
+Environment="UNSAFE_SKIP_BACKUP=false"
+[Install]
+WantedBy=multi-user.target'> /etc/systemd/system/tradeviewchain.service"
 
-# sudo systemctl daemon-reload
-# sudo systemctl enable tradeviewchain.service
-# # tradeviewd tendermint unsafe-reset-all --home $HOMEDIR
+sudo systemctl daemon-reload
+sudo systemctl enable tradeviewchain.service
+# tradeviewd tendermint unsafe-reset-all --home $HOMEDIR
 # sudo systemctl start tradeviewchain.service
