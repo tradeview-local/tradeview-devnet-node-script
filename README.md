@@ -16,9 +16,7 @@ Setup the node:
 open a terminal window and run the following command:
 
 ```bash
-
 ./tradeview_ubuntu_node.sh
-
 ```
 
 once it finishes, start the node service with the following command:
