@@ -138,13 +138,14 @@ fi
 	echo "========================================================================================================================"
 	tradeviewd init $MONIKER -o --chain-id $CHAINID --home "$HOMEDIR"
   # Allocate genesis accounts (cosmos formatted addresses)
-	tradeviewd add-genesis-account $KEYS 10000000000000000000000000000tvx --keyring-backend $KEYRING --home "$HOMEDIR"
+	# tradeviewd add-genesis-account $KEYS 10000000000000000000000000000tvx --keyring-backend $KEYRING --home "$HOMEDIR"
 
 	# Sign genesis transaction
-	tradeviewd gentx ${KEYS} 1000000000000000000000000tvx --keyring-backend $KEYRING --chain-id $CHAINID --home "$HOMEDIR"
+	# tradeviewd gentx ${KEYS} 1000000000000000000000000tvx --keyring-backend $KEYRING --chain-id $CHAINID --home "$HOMEDIR"
 	
 	# Collect genesis tx
-	tradeviewd collect-gentxs --home "$HOMEDIR"
+	# tradeviewd collect-gentxs --home "$HOMEDIR"
+  
 	# Change parameter token denominations to tvx
 	jq '.app_state["staking"]["params"]["bond_denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 	jq '.app_state["crisis"]["constant_fee"]["denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
