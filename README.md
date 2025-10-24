@@ -15,8 +15,20 @@ git clone '<https://github.com/tradeview-local/tradeview-devnet-node-script.git>
 Setup the node:
 open a terminal window and run the following command:
 
+```bash
+
 ./tradeview_ubuntu_node.sh
 
-NOTE: The blockchain  is syncing in a background as a service. You can print the logs and check the logs of the node with the following command :
+```
 
+once it finishes, start the node service with the following command:
+
+```bash
+sudo systemctl start tradeviewchain.service
+```
+
+check the node logs with the following command:
+
+```bash
 journalctl -u tradeviewchain.service -f
+```
