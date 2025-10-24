@@ -124,7 +124,7 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 # Check if the file exists
 if [ -e "$file_path" ]; then
 sudo systemctl stop tradeviewchain.service
-    echo "The file $file_path exists."
+echo "The file $file_path exists."
 fi
 	sudo rm -rf "$HOMEDIR"
 
@@ -132,7 +132,7 @@ fi
   tradeviewd config set client chain-id "$CHAINID" --home "$HOMEDIR"
 	tradeviewd config set client keyring-backend "$KEYRING" --home "$HOMEDIR"
 	
-    echo "===========================Copy these keys with mnemonics and save it in safe place ==================================="
+  echo "===========================Copy these keys with mnemonics and save it in safe place ==================================="
 	tradeviewd keys add $KEYS --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
 	echo "========================================================================================================================"
 	echo "========================================================================================================================"
@@ -145,7 +145,7 @@ fi
 	
 	# Collect genesis tx
 	tradeviewd collect-gentxs --home "$HOMEDIR"
-		# Change parameter token denominations to tvx
+	# Change parameter token denominations to tvx
 	jq '.app_state["staking"]["params"]["bond_denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 	jq '.app_state["crisis"]["constant_fee"]["denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 	jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
@@ -217,13 +217,13 @@ fi
 # sed -i 's/peer_gossip_sleep_duration = "100ms"/peer_gossip_sleep_duration = "10ms"/g' "$CONFIG"
 
 	# these are some of the node ids help to sync the node with p2p connections
-	#  sed -i 's/persistent_peers \s*=\s* ""/persistent_peers = "b3262f53ab7bb3341807b853566a88415363bc42@114.119.184.52:26656,c4bd2d6b9b05cd2dc7e582d051168ffbdbcd4483@124.243.136.185:26656,"/g' "$CONFIG"
+	 sed -i 's/persistent_peers \s*=\s* ""/persistent_peers = "a142d1e2b714d920e037504475e9ba4cd266c192@52.10.118.29:26656,"/g' "$CONFIG"
 
 	# remove the genesis file from binary
-	#  rm -rf $HOMEDIR/config/genesis.json
+	 rm -rf $HOMEDIR/config/genesis.json
 
 	# paste the genesis file
-	#  cp $current_path/genesis.json $HOMEDIR/config
+	 cp $current_path/genesis.json $HOMEDIR/config
 
 	# Run this to ensure everything worked and that the genesis file is setup correctly
 	tradeviewd validate-genesis --home "$HOMEDIR"
