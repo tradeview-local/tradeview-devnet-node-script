@@ -43,7 +43,7 @@ if [ "$OS" == "Ubuntu" ] && [ "$VERSION" == "22.04" -o "$VERSION" == "24.04" ]; 
 # Detect Ubuntu version for choosing the matching prebuilt binary
 # UBUNTU_VERSION=$(lsb_release -rs)
 # Set binary download URL (update this if your release URL pattern is different)
-BINARY_URL="https://github.com/tradeview-local/tradeview-devnet-node-script/releases/download/ubuntu${VERSION}/${BINARY}"
+BINARY_URL="https://github.com/tradeview-local/tradeview-devnet-node-script/releases/download/ubuntu${VERSION}-goleveldb/${BINARY}"
 echo $BINARY_URL
 
 # Download and install the node binary into the chosen install path
@@ -70,7 +70,7 @@ echo "==========================================================================
 echo "Enter the Name for the node:"
 echo "============================================================================================================"
 read -r MONIKER
-KEYS="val1"
+KEYS="mykey"
 CHAINID="${CHAIN_ID:-tradeview_9092-1}"
 KEYRING="os"
 KEYALGO="eth_secp256k1"
