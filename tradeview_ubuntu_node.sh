@@ -43,7 +43,7 @@ if [ "$OS" == "Ubuntu" ] && [ "$VERSION" == "22.04" -o "$VERSION" == "24.04" ]; 
 # Detect Ubuntu version for choosing the matching prebuilt binary
 # UBUNTU_VERSION=$(lsb_release -rs)
 # Set binary download URL (update this if your release URL pattern is different)
-BINARY_URL="https://github.com/tradeview-local/tradeview-devnet-node-script/releases/download/ubuntu${VERSION}/${BINARY}"
+BINARY_URL="https://github.com/tradeview-local/tradeview-devnet-node-script/releases/download/ubuntu${VERSION}-goleveldb/${BINARY}"
 echo $BINARY_URL
 
 # Download and install the node binary into the chosen install path
@@ -70,7 +70,7 @@ echo "==========================================================================
 echo "Enter the Name for the node:"
 echo "============================================================================================================"
 read -r MONIKER
-KEYS="val1"
+KEYS="mykey"
 CHAINID="${CHAIN_ID:-tradeview_9092-1}"
 KEYRING="os"
 KEYALGO="eth_secp256k1"
@@ -124,7 +124,7 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 # Check if the file exists
 if [ -e "$file_path" ]; then
 sudo systemctl stop tradeviewchain.service
-    echo "The file $file_path exists."
+echo "The file $file_path exists."
 fi
 	sudo rm -rf "$HOMEDIR"
 
@@ -132,20 +132,21 @@ fi
   tradeviewd config set client chain-id "$CHAINID" --home "$HOMEDIR"
 	tradeviewd config set client keyring-backend "$KEYRING" --home "$HOMEDIR"
 	
-    echo "===========================Copy these keys with mnemonics and save it in safe place ==================================="
+  echo "===========================Copy these keys with mnemonics and save it in safe place ==================================="
 	tradeviewd keys add $KEYS --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
 	echo "========================================================================================================================"
 	echo "========================================================================================================================"
 	tradeviewd init $MONIKER -o --chain-id $CHAINID --home "$HOMEDIR"
   # Allocate genesis accounts (cosmos formatted addresses)
-	tradeviewd add-genesis-account $KEYS 10000000000000000000000000000tvx --keyring-backend $KEYRING --home "$HOMEDIR"
+	# tradeviewd add-genesis-account $KEYS 10000000000000000000000000000tvx --keyring-backend $KEYRING --home "$HOMEDIR"
 
 	# Sign genesis transaction
-	tradeviewd gentx ${KEYS} 1000000000000000000000000tvx --keyring-backend $KEYRING --chain-id $CHAINID --home "$HOMEDIR"
+	# tradeviewd gentx ${KEYS} 1000000000000000000000000tvx --keyring-backend $KEYRING --chain-id $CHAINID --home "$HOMEDIR"
 	
 	# Collect genesis tx
-	tradeviewd collect-gentxs --home "$HOMEDIR"
-		# Change parameter token denominations to tvx
+	# tradeviewd collect-gentxs --home "$HOMEDIR"
+  
+	# Change parameter token denominations to tvx
 	jq '.app_state["staking"]["params"]["bond_denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 	jq '.app_state["crisis"]["constant_fee"]["denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 	jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="tvx"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
@@ -217,13 +218,13 @@ fi
 # sed -i 's/peer_gossip_sleep_duration = "100ms"/peer_gossip_sleep_duration = "10ms"/g' "$CONFIG"
 
 	# these are some of the node ids help to sync the node with p2p connections
-	#  sed -i 's/persistent_peers \s*=\s* ""/persistent_peers = "b3262f53ab7bb3341807b853566a88415363bc42@114.119.184.52:26656,c4bd2d6b9b05cd2dc7e582d051168ffbdbcd4483@124.243.136.185:26656,"/g' "$CONFIG"
+	 sed -i 's/persistent_peers \s*=\s* ""/persistent_peers = "a142d1e2b714d920e037504475e9ba4cd266c192@52.10.118.29:26656,cbaf9c8ce0327570f94785afb34f59682bf9a4b6@54.188.124.35:26656,11c8f292f07d19257d928f1747d929187d8b869e@44.250.77.188:26656,ea163f4b080d07940b22155efe353b73599e42eb@44.226.54.238:26656,472e073416960dfea308ce672477c83a3af30e18@52.36.139.239:26656"/g' "$CONFIG"
 
 	# remove the genesis file from binary
-	#  rm -rf $HOMEDIR/config/genesis.json
+	 rm -rf $HOMEDIR/config/genesis.json
 
 	# paste the genesis file
-	#  cp $current_path/genesis.json $HOMEDIR/config
+	 cp $current_path/genesis.json $HOMEDIR/config
 
 	# Run this to ensure everything worked and that the genesis file is setup correctly
 	tradeviewd validate-genesis --home "$HOMEDIR"
